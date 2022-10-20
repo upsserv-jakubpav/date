@@ -120,6 +120,17 @@ if( BUILD_TZ_LIB )
     target_include_directories( date-tz PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include> )
+    target_compile_options(date-tz PUBLIC /MT)
+    if( NOT USE_SYSTEM_TZ_DB AND NOT MANUAL_TZ_DB )
+      include( FetchContent )
+      FetchContent_Declare(
+        curl_src
+        GIT_REPOSITORY https://github.com/curl/curl.git
+        GIT_TAG master
+      )
+      FetchContent_MakeAvailable(curl_src)
+      target_link_libraries(date-tz PRIVATE CURL::libcurl)
+    endif( )
 
     if ( USE_SYSTEM_TZ_DB OR MANUAL_TZ_DB )
       target_compile_definitions( date-tz PRIVATE AUTO_DOWNLOAD=0 HAS_REMOTE_API=0 )
@@ -150,11 +161,6 @@ if( BUILD_TZ_LIB )
     if( NOT MSVC )
         find_package( Threads )
         target_link_libraries( date-tz PUBLIC Threads::Threads )
-    endif( )
-    if( NOT USE_SYSTEM_TZ_DB AND NOT MANUAL_TZ_DB )
-        find_package( CURL REQUIRED )
-        target_include_directories( date-tz SYSTEM PRIVATE ${CURL_INCLUDE_DIRS} )
-        target_link_libraries( date-tz PRIVATE ${CURL_LIBRARIES} )
     endif( )
 endif( )
 
