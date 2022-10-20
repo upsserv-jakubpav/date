@@ -128,6 +128,8 @@ if( BUILD_TZ_LIB )
         GIT_REPOSITORY https://github.com/curl/curl.git
         GIT_TAG master
       )
+      option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+      option(CURL_STATIC_CRT "Set to ON to build libcurl with static CRT on Windows (/MT)." ON)
       FetchContent_MakeAvailable(curl_src)
       target_link_libraries(date-tz PRIVATE CURL::libcurl)
     endif( )
